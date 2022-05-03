@@ -69,6 +69,7 @@ class RedBlackTree:
         if parent == None:          #if the inserted node is the first node
             newNode.color =1
             self.root=newNode
+            self.number_of_nodes = self.number_of_nodes + 1
             return
         elif newNode.key <parent.key:
             parent.left=newNode
@@ -76,6 +77,7 @@ class RedBlackTree:
             parent.right=newNode
 
         if newNode.parent.parent == None:       #if the inserted node is the second one
+            self.number_of_nodes = self.number_of_nodes + 1
             return
         self.insertFix(newNode)
         self.number_of_nodes= self.number_of_nodes+1
@@ -211,4 +213,4 @@ tree.insert(100)
 print(tree.root)
 tree.print_tree()
 print(tree.heightOfTree(tree.root,0))
-print(tree.search(91))
+print(tree.number_of_nodes)
