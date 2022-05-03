@@ -45,8 +45,6 @@ class RedBlackTree:
         newNode =Node(key)
         newNode.left=self.nil
         newNode.right=self.nil
-        newNode.parent=None
-        newNode.color=0
         node = self.root
         parent=None                 #aka None aka nil
 
@@ -58,17 +56,15 @@ class RedBlackTree:
                 node = node.right
         newNode.parent= parent
         if parent == None:          #if the inserted node is the first node
+            newNode.color =1
             self.root=newNode
+            return
         elif newNode.key <parent.key:
             parent.left=newNode
         else:
             parent.right=newNode
 
-        if newNode.parent==None:
-            newNode.color=1
-            self.root = newNode
-            return
-        if newNode.parent.parent == None:
+        if newNode.parent.parent == None:       #if the inserted node is the second one
             return
         self.insertFix(newNode)
         self.number_of_nodes= self.number_of_nodes+1
@@ -76,19 +72,19 @@ class RedBlackTree:
     def insertFix(self, newNode):
         uncle = None
         parentIsLeft = False
-        parent = newNode.parent
         if newNode.parent==newNode.parent.parent.left:
             uncle = newNode.parent.parent.right
             parentIsLeft = True
         else:
             uncle = newNode.parent.parent.left
-        while parent.color ==0:
+        while newNode!=self.root and newNode.parent.color==0 :
             #case 1: Uncle is red -> reverse colors of  uncle and parent with grandparent
             if uncle.color==0:
                 newNode.parent.color=1
                 uncle.color=1
                 newNode.parent.parent.color=0
                 newNode=newNode.parent.parent
+
             else:
                 #case 2: uncle is
                 # Left right condition
@@ -109,7 +105,7 @@ class RedBlackTree:
                     newNode.parent.color =1
                     newNode.parent.parent.color=0
                     self.leftRotate(newNode.parent.parent)
-                self.root.color=1
+            self.root.color=1
     def leftRotate(self,node):
         """
          a          b
@@ -118,7 +114,7 @@ class RedBlackTree:
           /  \      \
         c     d      c
         """
-        y=node.right
+        y = node.right
         node.right=y.left       #connect a to c
         if y.left!=self.nil:    #connect c to a
             y.left.parent=node
@@ -175,3 +171,5 @@ tree.insert(40)
 tree.insert(30)
 tree.insert(60)
 tree.insert(70)
+tree.insert(80)
+print(tree.root)
