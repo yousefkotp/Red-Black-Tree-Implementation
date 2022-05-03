@@ -40,7 +40,18 @@ class RedBlackTree:
         self.nil.right=None
         self.root = self.nil
         self.number_of_nodes= 0
-
+    def search(self,key):
+        node = self.root
+        if(node.key==key):
+            return True
+        while (node != self.nil):  # as long as we didn't reach the end of the tree
+            if node.key==key:
+                return True
+            elif key< node.key:
+                node = node.left
+            else:
+                node = node.right
+        return False
     def insert(self,key):
         newNode =Node(key)
         newNode.left=self.nil
@@ -200,3 +211,4 @@ tree.insert(100)
 print(tree.root)
 tree.print_tree()
 print(tree.heightOfTree(tree.root,0))
+print(tree.search(91))
