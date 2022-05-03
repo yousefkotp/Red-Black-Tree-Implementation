@@ -11,15 +11,24 @@ class Node:
             color = "Red"
         else:
             color = "Black"
-        msg = ("Key: {}\nColor: {}\nLeft: {}\nRight: {}\nParent: {}"
-            .format(
-            self.key,
-            color,
-            self.left.key,
-            self.right.key,
-            self.parent.key
-        ))
-        if self.parent.key is None:
+        if self.parent is None:
+            msg = ("Key: {}\nColor: {}\nLeft: {}\nRight: {}\n"
+                .format(
+                self.key,
+                color,
+                self.left.key,
+                self.right.key,
+            ))
+        else:
+            msg = ("Key: {}\nColor: {}\nLeft: {}\nRight: {}\nParent: {}\n"
+                .format(
+                self.key,
+                color,
+                self.left.key,
+                self.right.key,
+                self.parent.key,
+            ))
+        if self.parent is None:
             msg = "This node is the Root\n" + msg
         return msg
 
@@ -34,30 +43,32 @@ class RedBlackTree:
 
     def insert(self,key):
         newNode =Node(key)
-        newNode.parent=None
         newNode.left=self.nil
         newNode.right=self.nil
-
+        newNode.parent=None
+        newNode.color=0
         node = self.root
-        parent=None         #aka None aka nil
-        while(node!=self.nil):  #as long as we didn't reach the end of the tree
+        parent=None                 #aka None aka nil
+
+        while(node!=self.nil):      #as long as we didn't reach the end of the tree
             parent = node
             if newNode.key <node.key:
                 node = node.left
             else:
                 node = node.right
         newNode.parent= parent
-        if parent == None:     #if the inserted node is the first node
+        if parent == None:          #if the inserted node is the first node
             self.root=newNode
         elif newNode.key <parent.key:
             parent.left=newNode
         else:
             parent.right=newNode
 
-        if node.parent==None:
-            node.color=1
+        if newNode.parent==None:
+            newNode.color=1
+            self.root = newNode
             return
-        if node.parent.parent == None:
+        if newNode.parent.parent == None:
             return
         self.insertFix(newNode)
         self.number_of_nodes= self.number_of_nodes+1
@@ -65,12 +76,13 @@ class RedBlackTree:
     def insertFix(self, newNode):
         uncle = None
         parentIsLeft = False
+        parent = newNode.parent
         if newNode.parent==newNode.parent.parent.left:
             uncle = newNode.parent.parent.right
             parentIsLeft = True
         else:
             uncle = newNode.parent.parent.left
-        while newNode.parent.color ==0:
+        while parent.color ==0:
             #case 1: Uncle is red -> reverse colors of  uncle and parent with grandparent
             if uncle.color==0:
                 newNode.parent.color=1
@@ -90,7 +102,7 @@ class RedBlackTree:
                 #left left condition
                 if parentIsLeft:
                     newNode.parent.color=1          #the new parent
-                    newNode.parent.parent= 0        #the new grandparent will be red
+                    newNode.parent.parent.color= 0        #the new grandparent will be red
                     self.rightRotate(newNode.parent.parent)
                 #right right condition
                 else:
@@ -154,9 +166,12 @@ class RedBlackTree:
 
 
 
+
 tree= RedBlackTree()
 tree.insert(10)
 tree.insert(20)
 tree.insert(50)
 tree.insert(40)
 tree.insert(30)
+tree.insert(60)
+tree.insert(70)
