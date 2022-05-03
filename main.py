@@ -7,7 +7,7 @@ def readFile(fileName):
     file.close()
 while True:
     print("What do you want to do?")
-    option = int(input("1- Load Dictionary\t2- Print size of the Dictionary\n3- Insert Word\t4- Look-up a Word\n5-Exit\n"))
+    option = int(input("1- Load Dictionary\t2- Print size of the Dictionary\n3- Insert Word\t4- Look-up a Word\n5-Print Tree Height\t6- Exit\n"))
     if option ==1:
         readFile("EN-US-Dictionary.txt")
     elif option ==2:
@@ -25,6 +25,8 @@ while True:
             print("YES")
         else:
             print("NO")
+    elif option ==5:
+        print(tree.heightOfTree(tree.root,0))
     else:
         print("Thank you for using our application! :)")
         break;
