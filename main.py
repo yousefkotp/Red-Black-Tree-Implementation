@@ -160,6 +160,26 @@ class RedBlackTree:
     def printTreeSize(self):
         return self.number_of_nodes
 
+    # Function to print
+    def __printCall(self, node, indent, last):
+        if node != self.nil:
+            print(indent, end=' ')
+            if last:
+                print("R----", end=' ')
+                indent += "     "
+            else:
+                print("L----", end=' ')
+                indent += "|    "
+
+            s_color = "RED" if node.color == 0 else "BLACK"
+            print(str(node.key) + "(" + s_color + ")")
+            self.__printCall(node.left, indent, False)
+            self.__printCall(node.right, indent, True)
+
+    # Function to call print
+    def print_tree(self):
+        self.__printCall(self.root, "", True)
+
 
 
 
@@ -172,4 +192,4 @@ tree.insert(30)
 tree.insert(60)
 tree.insert(70)
 tree.insert(80)
-print(tree.root)
+tree.print_tree()
