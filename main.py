@@ -24,8 +24,8 @@ class Node:
             msg = "This node is the Root\n" + msg
         return msg
 class RedBlackTree:
-    def __init__(self,newNode=Node):        #needs a node to be initialized
-        self.nil=newNode(0)
+    def __init__(self):
+        self.nil=Node(0)
         self.nil.color = 1                  #the root and the nil are black
         self.root = self.nil
         self.number_of_nodes= 0
@@ -51,4 +51,44 @@ class RedBlackTree:
         self.insertFix(newNode)
         self.number_of_nodes= self.number_of_nodes+1
 
-        def insertFix(self, newNode=Node):
+        def insertFix(self, newNode):
+            uncle = None
+            parentIsLeft = False
+            if newNode.parent==newNode.parent.parent.left:
+                uncle = newNode.parent.parent.right
+                parentIsLeft = True
+            else:
+                uncle = newNode.parent.parent.left
+            while newNode.parent.color ==0:
+                uncle = newNode.parent.parent.right
+                #case 1: Uncle is red -> reverse colors of  uncle and parent with grandparent
+                if uncle.color==0:
+                    newNode.parent.color=1
+                    uncle.color=1
+                    newNode.parent.parent.color=0
+                    newNode=newNode.parent.parent
+                else:
+                    #case 2: uncle is
+                    # Left right condition
+                    if parentIsLeft and newNode == newNode.parent.right:
+                        newNode = newNode.parent        #Take care as we made the new node the parent
+                        self.leftRotate(newNode)
+                    #Right Left condition
+                    elif parentIsLeft ==False and newNode==newNode.parent.left:
+                        newNode=newNode.parent
+                        self.rightRotate(newNode)
+                    #left left condition
+                    if parentIsLeft:
+                        newNode.parent.color=1          #the new parent
+                        newNode.parent.parent= 0        #the new grandparent will be red
+                        self.rightRotate(newNode.parent.parent)
+                    #right right condition
+                    else:
+                        newNode.parent.color =1
+                        newNode.parent.parent.color=0
+                        self.leftRotate(newNode.parent.parent)
+
+                    self.root.color=1
+
+
+
