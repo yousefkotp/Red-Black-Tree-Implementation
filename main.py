@@ -70,14 +70,14 @@ class RedBlackTree:
         self.number_of_nodes= self.number_of_nodes+1
 
     def insertFix(self, newNode):
-        uncle = None
-        parentIsLeft = False
-        if newNode.parent==newNode.parent.parent.left:
-            uncle = newNode.parent.parent.right
-            parentIsLeft = True
-        else:
-            uncle = newNode.parent.parent.left
         while newNode!=self.root and newNode.parent.color==0 :
+            uncle = None
+            parentIsLeft = False
+            if newNode.parent == newNode.parent.parent.left:
+                uncle = newNode.parent.parent.right
+                parentIsLeft = True
+            else:
+                uncle = newNode.parent.parent.left
             #case 1: Uncle is red -> reverse colors of  uncle and parent with grandparent
             if uncle.color==0:
                 newNode.parent.color=1
@@ -163,7 +163,7 @@ class RedBlackTree:
     # Function to print
     def __printCall(self, node, indent, last):
         if node != self.nil:
-            print(indent, end=' ')
+            print(indent, end=' ')          #the default end characther is new line
             if last:
                 print("R----", end=' ')
                 indent += "     "
@@ -179,7 +179,10 @@ class RedBlackTree:
     # Function to call print
     def print_tree(self):
         self.__printCall(self.root, "", True)
-
+    def heightOfTree(self,node,sum):
+        if node is self.nil:
+            return sum
+        return max(self.heightOfTree(node.left, sum + 1), self.heightOfTree(node.right, sum + 1))
 
 
 
@@ -192,4 +195,8 @@ tree.insert(30)
 tree.insert(60)
 tree.insert(70)
 tree.insert(80)
+tree.insert(90)
+tree.insert(100)
+print(tree.root)
 tree.print_tree()
+print(tree.heightOfTree(tree.root,0))
