@@ -1,180 +1,177 @@
 class Node:
-    #if color = 0 then red, if 1--> black
-    def __init__(self, key):        #self references the current instance of this class
-        self.key=key                #needs a key to be initialized
+    # if color = 0 -> red
+    # if color = 1--> black
+    def __init__(self, key):  # Constructor
+        self.key = key  # Node needs a key to be initialized
         self.parent = None
-        self.right=None
-        self.left=None
-        self.color=0
-    def __str__(self):
-        if(self.color==0):
-            color = "Red"
-        else:
-            color = "Black"
-        if self.parent is None:
-            msg = ("Key: {}\nColor: {}\nLeft: {}\nRight: {}\n"
-                .format(
-                self.key,
-                color,
-                self.left.key,
-                self.right.key,
-            ))
-        else:
-            msg = ("Key: {}\nColor: {}\nLeft: {}\nRight: {}\nParent: {}\n"
-                .format(
-                self.key,
-                color,
-                self.left.key,
-                self.right.key,
-                self.parent.key,
-            ))
-        if self.parent is None:
-            msg = "This node is the Root\n" + msg
-        return msg
+        self.right = None
+        self.left = None
+        self.color = 0
+
 
 class RedBlackTree:
-    def __init__(self):
-        self.nil=Node(0)
-        self.nil.color = 1                  #the root and the nil are black
-        self.nil.left=None
-        self.nil.right=None
+    def __init__(self):  # Constructor
+        self.nil = Node(None)
+        self.nil.color = 1  # The root and the nil are black
         self.root = self.nil
-        self.number_of_nodes= 0
-    def search(self,key):
+        self.number_of_nodes = 0
+
+    def search(self, key):
         node = self.root
-        while (node != self.nil):  # as long as we didn't reach the end of the tree
-            if node.key==key:
+
+        while node != self.nil:  # as long as we didn't reach the end of the tree
+            if node.key == key:
                 return True
-            elif key< node.key:
+            elif key < node.key:
                 node = node.left
             else:
                 node = node.right
         return False
-    def insert(self,key):
-        newNode =Node(key)
-        newNode.left=self.nil
-        newNode.right=self.nil
-        node = self.root
-        parent=None                 #aka None aka nil
 
-        while(node!=self.nil):      #as long as we didn't reach the end of the tree
+    def insert(self, key):
+        newNode = Node(str(key).lower())
+        newNode.left = self.nil
+        newNode.right = self.nil
+        node = self.root
+        parent = None  # TBD
+
+        while node != self.nil:  # Find the appropriate parent
             parent = node
-            if newNode.key <node.key:
+            if newNode.key < node.key:
                 node = node.left
             else:
                 node = node.right
-        newNode.parent= parent
-        if parent == None:          #if the inserted node is the first node
-            newNode.color =1
-            self.root=newNode
-            self.number_of_nodes = self.number_of_nodes + 1
+        newNode.parent = parent
+
+        if parent is None:  # Inserted node is the first node
+            newNode.color = 1
+            self.root = newNode
+            self.number_of_nodes += 1
             return
-        elif newNode.key <parent.key:
-            parent.left=newNode
+        elif newNode.key < parent.key:
+            parent.left = newNode
         else:
-            parent.right=newNode
+            parent.right = newNode
 
-        if newNode.parent.parent == None:       #if the inserted node is the second one
-            self.number_of_nodes = self.number_of_nodes + 1
+        if newNode.parent.parent is None:  # Parent is the root
+            self.number_of_nodes += 1
             return
-        self.insertFix(newNode)
-        self.number_of_nodes= self.number_of_nodes+1
 
+        self.insertFix(newNode)  # Handle cases
+        self.number_of_nodes += 1
+
+    # This method handles cases of RB-tree insertions
     def insertFix(self, newNode):
-        while newNode!=self.root and newNode.parent.color==0 :
-            uncle = None
-            parentIsLeft = False
+        while newNode != self.root and newNode.parent.color == 0:  # Loop until we reach the root or parent is black
+
+            parentIsLeft = False  # Parent is considered left child by default
+
+            # Assign uncle to appropriate node
             if newNode.parent == newNode.parent.parent.left:
                 uncle = newNode.parent.parent.right
                 parentIsLeft = True
             else:
                 uncle = newNode.parent.parent.left
-            #case 1: Uncle is red -> reverse colors of  uncle and parent with grandparent
-            if uncle.color==0:
-                newNode.parent.color=1
-                uncle.color=1
-                newNode.parent.parent.color=0
-                newNode=newNode.parent.parent
 
+            # Case 1: Uncle is red -> Reverse colors of uncle, parent and grandparent
+            if uncle.color == 0:
+                newNode.parent.color = 1
+                uncle.color = 1
+                newNode.parent.parent.color = 0
+                newNode = newNode.parent.parent
+
+            # Case 2: Uncle is black -> check triangular or linear and rotate accordingly
             else:
-                #case 2: uncle is
-                # Left right condition
+                # Left-right condition (triangular)
                 if parentIsLeft and newNode == newNode.parent.right:
-                    newNode = newNode.parent        #Take care as we made the new node the parent
+                    newNode = newNode.parent  # Take care as we made the new node the parent
                     self.leftRotate(newNode)
-                #Right Left condition
-                elif parentIsLeft ==False and newNode==newNode.parent.left:
-                    newNode=newNode.parent
+                # Right-Left condition (triangular)
+                elif not parentIsLeft and newNode == newNode.parent.left:
+                    newNode = newNode.parent
                     self.rightRotate(newNode)
-                #left left condition
+                # Left-left condition (linear)
                 if parentIsLeft:
-                    newNode.parent.color=1          #the new parent
-                    newNode.parent.parent.color= 0        #the new grandparent will be red
+                    newNode.parent.color = 1  # the new parent
+                    newNode.parent.parent.color = 0  # the new grandparent will be red
                     self.rightRotate(newNode.parent.parent)
-                #right right condition
+                # Right-right condition (linear)
                 else:
-                    newNode.parent.color =1
-                    newNode.parent.parent.color=0
+                    newNode.parent.color = 1
+                    newNode.parent.parent.color = 0
                     self.leftRotate(newNode.parent.parent)
-            self.root.color=1
-    def leftRotate(self,node):
+
+        self.root.color = 1  # Set root to black
+
+    def leftRotate(self, node):
         """
-         a          b
-          \   =>   / \
-           b      a   d
-          /  \      \
-        c     d      c
-        """
+                node              y
+                  \     =>      /  \
+                    y         node  d
+                  /  \           \
+                c     d           c
+                """
         y = node.right
-        node.right=y.left       #connect a to c
-        if y.left!=self.nil:    #connect c to a
-            y.left.parent=node
+        node.right = y.left  # connect node to c
+        if y.left != self.nil:  # connect c to node
+            y.left.parent = node
 
-        y.parent=node.parent    #connect a's parent to b
+        y.parent = node.parent  # connect y to node's parent
 
-        if node.parent==None:   #connect    b to a's parent
-            self.root=y
-        elif node == node.parent.left:
-            node.parent.left=y
-        else:
-            node.parent.right= y
-
-        y.left = node           #connect b to a
-        node.parent = y         #connect a to b
-
-
-    def rightRotate(self,node):
-        """
-         a                      b
-       /   \        =>        /   \
-      b                     c      a
-    /   \                         /
-   c     d                       d
-        """
-        y= node.left
-        node.left = y.right     #connect a to d
-        if y.right!=self.nil:   #connect d to a
-            y.right.parent = node
-        y.parent = node.parent  #connect a's parent to b
-
-        if node.parent ==None:  #connect b parent to a's parent
+        if node.parent is None:  # connect node's parent to y
             self.root = y
         elif node == node.parent.left:
             node.parent.left = y
         else:
             node.parent.right = y
 
-        y.right = node          #connect b to a
-        node.parent = y         #connect a to b
+        y.left = node  # connect y to node
+        node.parent = y  # connect node to y
 
+    def rightRotate(self, node):
+        """
+        node                    y
+       /   \        =>        /   \
+      y                     c    node
+    /   \                        /
+   c     d                      d
+        """
+        y = node.left
+        node.left = y.right  # connect node to d
+        if y.right != self.nil:  # connect d to node
+            y.right.parent = node
+        y.parent = node.parent  # connect y to node's parent
 
-    def printTreeSize(self):
-        return self.number_of_nodes
+        if node.parent is None:  # connect b parent to a's parent
+            self.root = y
+        elif node == node.parent.left:
+            node.parent.left = y
+        else:
+            node.parent.right = y
+
+        y.right = node  # connect y to node
+        node.parent = y  # connect node to y
+
+    # This method returns the height of the tree
+    def heightOfTree(self, node, sumval):
+        if node is self.nil:
+            return sumval
+        return max(self.heightOfTree(node.left, sumval + 1), self.heightOfTree(node.right, sumval + 1))
+
+    # This method returns the black-height of the tree
+    def getBlackHeight(self):
+        node = self.root
+        bh = 0
+        while node is not self.nil:
+            node = node.left
+            if node.color == 1:
+                bh += 1
+        return bh
 
     # Function to print used in debugging
     def __printCall(self, node, indent, last):
         if node != self.nil:
-            print(indent, end=' ')          #the default end characther is new line
+            print(indent, end=' ')  # the default end character is new line
             if last:
                 print("R----", end=' ')
                 indent += "     "
@@ -191,27 +188,22 @@ class RedBlackTree:
     def print_tree(self):
         self.__printCall(self.root, "", True)
 
-    def heightOfTree(self,node,sum):
-        if node is self.nil:
-            return sum
-        return max(self.heightOfTree(node.left, sum + 1), self.heightOfTree(node.right, sum + 1))
-
 
 """
-tree= RedBlackTree()
-tree.insert(10)
-tree.insert(20)
-tree.insert(50)
-tree.insert(40)
-tree.insert(30)
-tree.insert(60)
-tree.insert(70)
-tree.insert(80)
-tree.insert(90)
-tree.insert(100)
-print(tree.root)
+tree = RedBlackTree()
+tree.insert('a')
+tree.insert('b')
+tree.insert('e')
+tree.insert('d')
+tree.insert('c')
+tree.insert('f')
+tree.insert('g')
+tree.insert('h')
+tree.insert('i')
+tree.insert('j')
 tree.print_tree()
-print(tree.heightOfTree(tree.root,0))
+print(tree.heightOfTree(tree.root, 0))
 print(tree.number_of_nodes)
-print(tree.search(91))
+print(tree.search('q'))
+print(tree.getBlackHeight())
 """
